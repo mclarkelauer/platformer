@@ -1,22 +1,47 @@
-Traceback(most recent call last):
-  File "/Users/mcl/Platformer/venv/bin/autopep8", line 8, in <module >
-    sys.exit(main())
-             ^ ^ ^ ^ ^^
-  File "/Users/mcl/Platformer/venv/lib/python3.11/site-packages/autopep8.py", line 4512, in main
-    fixed_stdin = fix_code(read_stdin, args, encoding=encoding)
-                  ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^
-  File "/Users/mcl/Platformer/venv/lib/python3.11/site-packages/autopep8.py", line 3506, in fix_code
-    return fix_lines(sio.readlines(), options=options)
-           ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^
-  File "/Users/mcl/Platformer/venv/lib/python3.11/site-packages/autopep8.py", line 3569, in fix_lines
-    fixed_source = fix.fix()
-                   ^ ^ ^ ^ ^ ^ ^ ^ ^
-  File "/Users/mcl/Platformer/venv/lib/python3.11/site-packages/autopep8.py", line 613, in fix
-    self._fix_source(filter_results(source=''.join(self.source),
-  File "/Users/mcl/Platformer/venv/lib/python3.11/site-packages/autopep8.py", line 557, in _fix_source
-    modified_lines=fix(result)
-                     ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^
-  File "/Users/mcl/Platformer/venv/lib/python3.11/site-packages/autopep8.py", line 761, in fix_e225
-    pycodestyle.missing_whitespace_around_operator(fixed, ts))
-    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^
-AttributeError: module 'pycodestyle' has no attribute 'missing_whitespace_around_operator'. Did you mean: 'whitespace_around_operator'?
+import pygame
+from collections import namedtuple
+
+InputState = namedtuple("InputState", "up down left right")
+
+
+class Context():
+    def __init__(self, max_x, max_y):
+        self.max_x = max_x
+        self.max_y = max_y
+        self.player_x = max_x/2
+        self.player_y = max_y/2
+        self.screen_id = 0
+        self.input = InputState(False, False, False, False)
+        self.running = False
+
+
+class Game():
+    def __init__(self, max_x, max_y):
+        self.context = Context(max_x, max_y)
+
+    def run_game(self):
+        # pygame init
+        self.running = True
+
+        while self.running:
+            self._game_tick()
+        # pygame exit
+
+    def _game_tick(self):
+        # runs once for every game tick
+        self._process_input()
+        self._update_state()
+        self._draw_screen()
+        pass
+
+    def _draw_screen(self):
+        # redraw scene based on new input state
+        pass
+
+    def _process_input(self):
+        # case statement tracking input state
+        pass
+
+    def _update_state(self):
+        # take input state and update game state
+        pass
