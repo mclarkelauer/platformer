@@ -1,5 +1,6 @@
 import pygame
 from collections import namedtuple
+from math import floor
 from pprint import pprint
 Color = namedtuple("Color", "red green blue")
 
@@ -8,21 +9,25 @@ BLOCK = Color(255, 0, 0)
 
 
 class GridScreen():
-    def __init__(self, grid_size):
+    def __init__(self, grid_size,screen_size):
         self.grid_size = grid_size
         self.grid = []
+        self.tile_size = screen_size/self.grid_size
 
-    def draw_grid(self, screen, screen_size):
-        tile_size = screen_size/self.grid_size
+    def draw_grid(self, screen):
         for i in range(self.grid_size):
             for j in range(self.grid_size):
                 pygame.draw.rect(screen, self.grid[i][j], pygame.Rect(
-                    i*tile_size, j*tile_size, (i+1)*tile_size, (j+1)*tile_size))
+                    i*self.tile_size, j*self.tile_size, (i+1)*self.tile_size, (j+1)*self.tile_size))
 
+    def get_grid_tile(self,x,y):
+        tile_x = floor(x/self.tile_size)
+        tile_y = floor(y/self.tile_size)
+        return self.grid[int(tile_x)][int(tile_y)]
 
 class DefaultGridScreen(GridScreen):
-    def __init__(self, grid_size):
-        super().__init__(grid_size)
+    def __init__(self, grid_size, screen_size):
+        super().__init__(grid_size, screen_size)
         self.grid = []
         for i in range(grid_size):
             self.grid.append([])
@@ -34,8 +39,8 @@ class DefaultGridScreen(GridScreen):
 
 
 class GridOfGrids():
-    def __init__(self):
-        self._griddie = [[DefaultGridScreen(64)]]
+    def __init__(self, screen_size):
+        self._griddie = [[DefaultGridScreen(64,screen_size)]]
 
     def get_grid(self, x, y):
         return self._griddie[y][x]
@@ -46,11 +51,38 @@ class Player():
         self.x = x
         self.y = y
         self.color = color
+        self.step_size = 1
 
     def draw(self,screen):
         pygame.draw.circle(screen, self.color,
                            (self.x, self.y), self.size)
 
+    def compute_player_move(self, input):
+        x = self.x
+        y = self.y
+        step = self.step_size
+        if input.is_diag():
+            step *= .75
+        if input.up:
+            y -= step
+        if input.down:
+            y += step
+        if input.left:
+            x -= step
+        if input.right:
+            x += step
+        return x,y
+
+    def move_player(self, x , y):
+        self.x = x
+        self.y = y
+
+    def get_player_boundaries(self, x = None, y = None):
+        if x is None:
+            x = self.x
+        if y is None:
+            y = self.y
+        return (x-self.size, y-self.size, x+self.size, y+self.size)
 
 class InputState():
     def __init__(self, left=False, right=False, up=False, down=False):
@@ -77,7 +109,7 @@ class Context():
         self.gridID = {'x': 0, 'y': 0}
         self.input = InputState(False, False, False, False)
         self.running = False
-        self.gridOfGrids = GridOfGrids()
+        self.gridOfGrids = GridOfGrids(self.max_x)
         self.currentGridElement = self.gridOfGrids.get_grid(
             self.gridID['x'], self.gridID['y'])
 
@@ -115,7 +147,7 @@ class Game():
         # Clear the screen
         self.screen.fill((0, 0, 0))
         self.context.currentGridElement.draw_grid(
-            self.screen, self.context.max_x)
+            self.screen)
         # Draw something on the screena
         self.context.player.draw(self.screen)
 
@@ -155,15 +187,25 @@ class Game():
 
     def _update_state(self):
         # take input state and update game state
-        step = 8
+        currentGrid = self.context.currentGridElement
+        input = self.context.input
+        # detect overlap
+        (x , y) = self.context.player.compute_player_move(input)
+        min_x, min_y, max_x, max_y = self.context.player.get_player_boundaries(x,y)
 
-        if self.context.input.is_diag():
-            step *= .75
-        if self.context.input.up:
-            self.context.player.y -= step
-        if self.context.input.down:
-            self.context.player.y += step
-        if self.context.input.left:
-            self.context.player.x -= step
-        if self.context.input.right:
-            self.context.player.x += step
+        # detect edge collision with grid
+        top_left = min_x, min_y
+        top_right = max_x, min_y
+        bottom_left = min_x, max_y
+        bottom_right = max_x, max_y
+
+        print(top_right)
+        if BLOCK in [
+            currentGrid.get_grid_tile(top_left[0], top_left[1]),
+            currentGrid.get_grid_tile(top_right[0], top_right[1]),
+            currentGrid.get_grid_tile(bottom_left[0], bottom_left[1]),
+            currentGrid.get_grid_tile(bottom_right[0], bottom_right[1]),
+        ]:
+            print("collision")
+        else:
+            self.context.player.move_player(x, y)
