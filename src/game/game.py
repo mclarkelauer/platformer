@@ -1,8 +1,10 @@
 import pygame
 from collections import namedtuple
 from pprint import pprint
-EMPTY = (0, 0, 0)
-BLOCK = (255, 0, 0)
+Color = namedtuple("Color", "red green blue")
+
+EMPTY = Color(0,0,0)
+BLOCK = Color(255, 0, 0)
 
 
 class GridScreen():
@@ -30,8 +32,6 @@ class DefaultGridScreen(GridScreen):
                 else:
                     self.grid[i].append(EMPTY)
 
-        self.grid[32][32] = BLOCK
-
 
 class GridOfGrids():
     def __init__(self):
@@ -39,6 +39,17 @@ class GridOfGrids():
 
     def get_grid(self, x, y):
         return self._griddie[y][x]
+
+class Player():
+    def __init__(self, size, x, y, color):
+        self.size = size
+        self.x = x
+        self.y = y
+        self.color = color
+
+    def draw(self,screen):
+        pygame.draw.circle(screen, self.color,
+                           (self.x, self.y), self.size)
 
 
 class InputState():
@@ -62,8 +73,7 @@ class Context():
         self.tile_size = 16
         self.max_x = max_x
         self.max_y = max_y
-        self.player_x = max_x/2
-        self.player_y = max_y/2
+        self.player = Player(10, max_x/2, max_y/2, Color(0,255,0))
         self.gridID = {'x': 0, 'y': 0}
         self.input = InputState(False, False, False, False)
         self.running = False
@@ -107,8 +117,7 @@ class Game():
         self.context.currentGridElement.draw_grid(
             self.screen, self.context.max_x)
         # Draw something on the screena
-        pygame.draw.circle(self.screen, (255, 0, 0),
-                           (self.context.player_x, self.context.player_y), 20)
+        self.context.player.draw(self.screen)
 
         # Update the display
         pygame.display.flip()
@@ -147,13 +156,14 @@ class Game():
     def _update_state(self):
         # take input state and update game state
         step = 8
+
         if self.context.input.is_diag():
             step *= .75
         if self.context.input.up:
-            self.context.player_y -= step
+            self.context.player.y -= step
         if self.context.input.down:
-            self.context.player_y += step
+            self.context.player.y += step
         if self.context.input.left:
-            self.context.player_x -= step
+            self.context.player.x -= step
         if self.context.input.right:
-            self.context.player_x += step
+            self.context.player.x += step
