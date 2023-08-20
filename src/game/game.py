@@ -1,7 +1,7 @@
 import pygame
 
 from src.game.color import Color
-from src.game.grid import BLOCK, GridOfGrids
+from src.game.grid import GridOfGrids
 
 
 class Player():
@@ -158,8 +158,8 @@ class Game():
         bottom_left = min_x, max_y
         bottom_right = max_x, max_y
 
-        print(top_right)
-        if BLOCK in [
+        action = None
+        for tile in [
             currentGrid.get_grid_tile(top_left[0], top_left[1]),
             currentGrid.get_grid_tile(top_right[0], top_right[1]),
             currentGrid.get_grid_tile(bottom_left[0], bottom_left[1]),

@@ -4,8 +4,6 @@ import pygame
 
 from src.game.color import Color
 
-EMPTY = Color(0,0,0)
-BLOCK = Color(255, 0, 0)
 
 
 class GridScreen():
@@ -34,7 +32,7 @@ class DefaultGridScreen(GridScreen):
             self.grid.append([])
             for j in range(grid_size):
                 if i == 0 or i == grid_size-1 or j == 0 or j == grid_size-1:
-                    self.grid[i].append(BLOCK)
+                    self.grid[i].append(WallBlock)
                 else:
                     self.grid[i].append(EMPTY)
 
