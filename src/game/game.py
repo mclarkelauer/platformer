@@ -1,5 +1,44 @@
 import pygame
 from collections import namedtuple
+from pprint import pprint
+EMPTY = (0, 0, 0)
+BLOCK = (255, 0, 0)
+
+
+class GridScreen():
+    def __init__(self, grid_size):
+        self.grid_size = grid_size
+        self.grid = []
+
+    def draw_grid(self, screen, screen_size):
+        tile_size = screen_size/self.grid_size
+        for i in range(self.grid_size):
+            for j in range(self.grid_size):
+                pygame.draw.rect(screen, self.grid[i][j], pygame.Rect(
+                    i*tile_size, j*tile_size, (i+1)*tile_size, (j+1)*tile_size))
+
+
+class DefaultGridScreen(GridScreen):
+    def __init__(self, grid_size):
+        super().__init__(grid_size)
+        self.grid = []
+        for i in range(grid_size):
+            self.grid.append([])
+            for j in range(grid_size):
+                if i == 0 or i == grid_size-1 or j == 0 or j == grid_size-1:
+                    self.grid[i].append(BLOCK)
+                else:
+                    self.grid[i].append(EMPTY)
+
+        self.grid[32][32] = BLOCK
+
+
+class GridOfGrids():
+    def __init__(self):
+        self._griddie = [[DefaultGridScreen(64)]]
+
+    def get_grid(self, x, y):
+        return self._griddie[y][x]
 
 
 class InputState():
@@ -19,14 +58,18 @@ class InputState():
 
 
 class Context():
-    def __init__(self, max_x, max_y):
+    def __init__(self, max_x=1024, max_y=1024, tile_size=16):
+        self.tile_size = 16
         self.max_x = max_x
         self.max_y = max_y
         self.player_x = max_x/2
         self.player_y = max_y/2
-        self.screen_id = 0
+        self.gridID = {'x': 0, 'y': 0}
         self.input = InputState(False, False, False, False)
         self.running = False
+        self.gridOfGrids = GridOfGrids()
+        self.currentGridElement = self.gridOfGrids.get_grid(
+            self.gridID['x'], self.gridID['y'])
 
 
 class Game():
@@ -51,7 +94,7 @@ class Game():
 
     def _game_tick(self):
         # runs once for every game tick
-        pygame.time.delay(10)
+        pygame.time.delay(1)
         self._process_input()
         self._update_state()
         self._draw_screen()
@@ -61,13 +104,14 @@ class Game():
 
         # Clear the screen
         self.screen.fill((0, 0, 0))
-
-        # Draw something on the screen
+        self.context.currentGridElement.draw_grid(
+            self.screen, self.context.max_x)
+        # Draw something on the screena
         pygame.draw.circle(self.screen, (255, 0, 0),
                            (self.context.player_x, self.context.player_y), 20)
 
         # Update the display
-        pygame.display.update()
+        pygame.display.flip()
 
     def _process_input(self):
         # case statement tracking input state
@@ -102,9 +146,9 @@ class Game():
 
     def _update_state(self):
         # take input state and update game state
-        step = 1
+        step = 8
         if self.context.input.is_diag():
-            step = .75
+            step *= .75
         if self.context.input.up:
             self.context.player_y -= step
         if self.context.input.down:
