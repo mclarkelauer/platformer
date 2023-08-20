@@ -1,4 +1,4 @@
-import pygame,os
+import pygame
 
 from src.game.color import Color
 from src.game.grid import BLOCK, GridOfGrids
@@ -107,7 +107,7 @@ class Game():
         self.screen.fill((0, 0, 0))
         self.context.currentGridElement.draw_grid(
             self.screen)
-        # Draw something on the screen
+        # Draw something on the screena
         self.context.player.draw(self.screen)
 
         # Update the display
@@ -158,6 +158,7 @@ class Game():
         bottom_left = min_x, max_y
         bottom_right = max_x, max_y
 
+        print(top_right)
         if BLOCK in [
             currentGrid.get_grid_tile(top_left[0], top_left[1]),
             currentGrid.get_grid_tile(top_right[0], top_right[1]),
