@@ -25,7 +25,7 @@ class GridScreen():
         tile_y = floor(y/self.tile_size)
         return self.grid[int(tile_x)][int(tile_y)]
 
-#adding random comment
+
 class DefaultGridScreen(GridScreen):
     def __init__(self, grid_size, screen_size):
         super().__init__(grid_size, screen_size)
