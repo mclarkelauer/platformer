@@ -38,7 +38,6 @@ class DefaultGridScreen(GridScreen):
                 else:
                     self.grid[i].append(EMPTY)
 
-
 class GridOfGrids():
     def __init__(self, screen_size):
         self._griddie = [[DefaultGridScreen(64,screen_size)]]
