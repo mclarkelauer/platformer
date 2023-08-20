@@ -1,4 +1,5 @@
 import pygame
+import logging
 
 from src.game.color import Color
 from src.game.grid import GridOfGrids
@@ -163,8 +164,18 @@ class Game():
             currentGrid.get_grid_tile(top_left[0], top_left[1]),
             currentGrid.get_grid_tile(top_right[0], top_right[1]),
             currentGrid.get_grid_tile(bottom_left[0], bottom_left[1]),
-            currentGrid.get_grid_tile(bottom_right[0], bottom_right[1]),
-        ]:
-            print("collision")
-        else:
+            currentGrid.get_grid_tile(bottom_right[0], bottom_right[1])]:
+            tile_action = tile.action()
+            if tile_action.type == "Collide":
+                action = tile_action
+                break
+            elif tile_action.type == "Door":
+                action = tile_action
+                break
+            elif tile_action.type == "Air":
+                action = tile_action
+            else:
+                print(tile_action)
+                logging.error(tile_action)
+        if action.type != "Collide":
             self.context.player.move_player(x, y)
