@@ -1,77 +1,7 @@
 import pygame
 import logging
 
-from src.game.color import Color
-from src.game.grid import GridOfGrids
-
-
-class Player():
-    def __init__(self, size, x, y, color):
-        self.size = size
-        self.x = x
-        self.y = y
-        self.color = color
-        self.step_size = 1
-
-    def draw(self,screen):
-        pygame.draw.circle(screen, self.color,
-                           (self.x, self.y), self.size)
-
-    def compute_player_move(self, input):
-        x = self.x
-        y = self.y
-        step = self.step_size
-        if input.is_diag():
-            step *= .75
-        if input.up:
-            y -= step
-        if input.down:
-            y += step
-        if input.left:
-            x -= step
-        if input.right:
-            x += step
-        return x,y
-
-    def move_player(self, x , y):
-        self.x = x
-        self.y = y
-
-    def get_player_boundaries(self, x = None, y = None):
-        if x is None:
-            x = self.x
-        if y is None:
-            y = self.y
-        return (x-self.size, y-self.size, x+self.size, y+self.size)
-
-class InputState():
-    def __init__(self, left=False, right=False, up=False, down=False):
-        self.left = left
-        self.right = right
-        self.up = up
-        self.down = down
-
-    def is_diag(self):
-        if ((self.left and self.up)
-            or (self.left and self.down)
-            or (self.right and self.up)
-                or (self.right and self.down)):
-            return True
-        return False
-
-
-class Context():
-    def __init__(self, max_x=1024, max_y=1024, tile_size=16):
-        self.tile_size = 16
-        self.max_x = max_x
-        self.max_y = max_y
-        self.player = Player(10, max_x / 2, max_y / 2, Color(0, 255, 0))
-        self.gridID = {'x': 0, 'y': 0}
-        self.input = InputState(False, False, False, False)
-        self.running = False
-        self.gridOfGrids = GridOfGrids(self.max_x)
-        self.currentGridElement = self.gridOfGrids.get_grid(
-            self.gridID['x'], self.gridID['y'])
+from src.game.state import Context
 
 
 class Game():
