@@ -111,18 +111,54 @@ class Game():
 
         match action:
             case ("Door", _):
+                x = self.context.gridID_x
+                y = self.context.gridID_y
                 logging.info("door")
                 match action:
                     case ("Door", "up"):
                         logging.error("door up")
+                        y -= 1
                     case("Door", "down"):
                         logging.error("door down")
+                        y +=1
                     case ("Door", "left"):
                         logging.error("door left")
+                        x -= 1
                     case ("Door", "right"):
                         logging.error("door right")
+                        x += 1
                     case _:
-                        logging.error("door has no direction")
+                        logging.error("door has no direction, {}", action)
+                # Do bounds checck
+                if y >= self.context.gridOfGrids.y_size:
+                    if self.context.door_wrap:
+                        y = 0
+                    else:
+                        logging.error("Door goes off edge of map")
+                if y < 0:
+                    if self.context.door_wrap:
+                        y = self.context.gridOfGrids.y_size -1
+                    else:
+                        logging.error("Door goes off edge of map")
+
+                if x >= self.context.gridOfGrids.x_size:
+                    if self.context.door_wrap:
+                        x = 0
+                    else:
+                        logging.error("Door goes off edge of map")
+                if x < 0:
+                    if self.context.door_wrap:
+                        x = self.context.gridOfGrids.x_size -1
+                    else:
+                        logging.error("Door goes off edge of map")
+
+                logging.info("Moved to grid {},{}", x, y)
+                self.context.gridID_y = y
+                self.context.gridID_x = x
+                self.context.currentGridElement = self.context.gridOfGrids.get_grid(x,y)
+                self.context.player.move_player(self.context.max_x/2, self.context.max_y/2)
+
+
             case ("Air", _):
                 logging.info("air")
                 self.context.player.move_player(x, y)

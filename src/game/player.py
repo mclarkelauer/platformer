@@ -7,7 +7,7 @@ class Player():
         self.x = x
         self.y = y
         self.color = color
-        self.step_size = 1
+        self.step_size = 2
 
     def draw(self,screen):
         pygame.draw.circle(screen, self.color,

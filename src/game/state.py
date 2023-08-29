@@ -26,9 +26,10 @@ class Context():
         self.max_x = max_x
         self.max_y = max_y
         self.player = Player(10, max_x / 2, max_y / 2, Color(0, 255, 0))
-        self.gridID = {'x': 0, 'y': 0}
+        self.gridID_x = 0
+        self.gridID_y = 0
+
         self.input = InputState(False, False, False, False)
         self.running = False
         self.gridOfGrids = GridOfGrids(self.max_x)
-        self.currentGridElement = self.gridOfGrids.get_grid(
-            self.gridID['x'], self.gridID['y'])
+        self.currentGridElement = self.gridOfGrids.get_grid(self.gridID_x, self.gridID_y)
