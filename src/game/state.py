@@ -21,6 +21,7 @@ class InputState():
 
 class Context():
     def __init__(self, max_x=1024, max_y=1024, tile_size=16):
+        self.door_wrap = True
         self.tile_size = 16
         self.max_x = max_x
         self.max_y = max_y

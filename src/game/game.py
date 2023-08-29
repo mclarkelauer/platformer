@@ -96,6 +96,8 @@ class Game():
             currentGrid.get_grid_tile(bottom_left[0], bottom_left[1]),
             currentGrid.get_grid_tile(bottom_right[0], bottom_right[1])]:
             tile_action = tile.action()
+
+
             if tile_action.type == "Collide":
                 action = tile_action
                 break
@@ -105,7 +107,26 @@ class Game():
             elif tile_action.type == "Air":
                 action = tile_action
             else:
-                print(tile_action)
                 logging.error(tile_action)
-        if action.type != "Collide":
-            self.context.player.move_player(x, y)
+
+        match action:
+            case ("Door", _):
+                logging.info("door")
+                match action:
+                    case ("Door", "up"):
+                        logging.error("door up")
+                    case("Door", "down"):
+                        logging.error("door down")
+                    case ("Door", "left"):
+                        logging.error("door left")
+                    case ("Door", "right"):
+                        logging.error("door right")
+                    case _:
+                        logging.error("door has no direction")
+            case ("Air", _):
+                logging.info("air")
+                self.context.player.move_player(x, y)
+            case _ :
+                pass
+
+

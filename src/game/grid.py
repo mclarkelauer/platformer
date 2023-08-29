@@ -4,9 +4,7 @@ import pygame
 
 from src.game.color import Color
 
-Action = namedtuple("Action", "type action_dict")
-
-
+Action = namedtuple("Action", "type action")
 
 class GridBlock():
     def __init__(self, color):
@@ -27,16 +25,27 @@ class SolidBlock(GridBlock):
 class Door(GridBlock):
     def __init__(self):
         super().__init__(Color(255,255,255))
-        self.action = {}
+        self.door_action = None
 
     def set_action(self, action):
         self.action = action
 
     def action(self):
-        return Action("Door", self.action)
+        return Action("Door", self.door_action)
 
 WallBlock=SolidBlock()
+
 DownDoorBlock=Door()
+DownDoorBlock.door_action = "down"
+
+UpDoorBlock=Door()
+UpDoorBlock.door_action = "up"
+
+RightDoorBlock=Door()
+RightDoorBlock.door_action = "right"
+
+LeftDoorBlock=Door()
+LeftDoorBlock.door_action = "left"
 
 class GridScreen():
     def __init__(self, grid_size,screen_size):
@@ -71,7 +80,14 @@ class DefaultGridScreen(GridScreen):
                 if j == grid_size-1 and i >= 20 and i <= 40:
                     self.grid[i][j] = DownDoorBlock
 
+                if j == 0 and i >= 20 and i <= 40:
+                    self.grid[i][j] = UpDoorBlock
 
+                if i == grid_size - 1 and j >= 20 and j <= 40:
+                    self.grid[i][j] = RightDoorBlock
+
+                if i == 0 and j >= 20 and j <= 40:
+                    self.grid[i][j] = LeftDoorBlock
 
 class GridOfGrids():
     def __init__(self, screen_size):
@@ -79,4 +95,3 @@ class GridOfGrids():
 
     def get_grid(self, x, y):
         return self._griddie[y][x]
-

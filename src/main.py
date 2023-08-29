@@ -2,6 +2,9 @@ import click
 
 from game.game import Game
 
+def setup_logging():
+    import logging.config
+    logging.basicConfig(format='%(asctime)s %(filename)s: %(message)s')
 
 @click.option('--y', default=640, help='Max X dimension')
 @click.option('--x', default=640, help='Max Y dimension')
@@ -12,4 +15,5 @@ def run_game(x, y):
 
 
 if __name__ == "__main__":
+    setup_logging()
     run_game()
