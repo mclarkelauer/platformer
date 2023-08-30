@@ -2,6 +2,7 @@ from src.game.color import Color
 from src.game.grid import GridOfGrids
 from src.game.player import Player
 
+import pygame
 
 class InputState():
     def __init__(self, left=False, right=False, up=False, down=False):
@@ -33,3 +34,24 @@ class Context():
         self.running = False
         self.gridOfGrids = GridOfGrids(self.max_x)
         self.currentGridElement = self.gridOfGrids.get_grid(self.gridID_x, self.gridID_y)
+        self.show_state = True
+
+    def format_state(self):
+        state = ""
+        state += "Tile Size: {}\n".format(self.tile_size)
+        state += "Tile Dimensions X:{}, Y:{}\n".format(self.max_x, self.max_y)
+        state += "Grid Dimensions X:{}, Y:{}\n".format(self.gridOfGrids.x_size, self.gridOfGrids.y_size)
+        state += "Player Coordinates: ({},{})\n".format(self.player.x, self.player.y)
+        state += "Player Grid: ({}, {})".format(self.gridID_x, self.gridID_y)
+
+
+
+        return state
+
+    def generate_state_image_overlay(self):
+        font = pygame.font.SysFont(None, 15)
+        state = self.format_state()
+        img = font.render(state.encode('utf-8'), True, (200, 200, 200))
+
+        return img
+

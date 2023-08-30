@@ -41,6 +41,9 @@ class Game():
         # Draw something on the screena
         self.context.player.draw(self.screen)
 
+        if self.context.show_state:
+            self.screen.blit(self.context.generate_state_image_overlay(),(20,20))
+
         # Update the display
         pygame.display.flip()
 
@@ -64,6 +67,9 @@ class Game():
 
                 if event.key == ord('q'):
                     self.running = False
+
+                if event.key == ord('p'):
+                    self.context.show_state = not self.context.show_state
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT or event.key == ord('a'):
