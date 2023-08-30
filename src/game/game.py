@@ -193,6 +193,7 @@ class Game():
         except Exception as e:
             import traceback
             print(traceback.format_exc())
+            raise e
         #   logging.exception("Error updating state")
 
 
