@@ -76,93 +76,114 @@ class Game():
                     self.context.input.down = False
 
     def _update_state(self):
-        # take input state and update game state
-        currentGrid = self.context.currentGridElement
-        input = self.context.input
-        # detect overlap
-        (x , y) = self.context.player.compute_player_move(input)
-        min_x, min_y, max_x, max_y = self.context.player.get_player_boundaries(x,y)
+        try:
+            # take input state and update game state
+            currentGrid = self.context.currentGridElement
+            input = self.context.input
+            # detect overlap
+            (x , y) = self.context.player.compute_player_move(input)
+            min_x, min_y, max_x, max_y = self.context.player.get_player_boundaries(x,y)
 
-        # detect edge collision with grid
-        top_left = min_x, min_y
-        top_right = max_x, min_y
-        bottom_left = min_x, max_y
-        bottom_right = max_x, max_y
+            # detect edge collision with grid
+            top_left = min_x, min_y
+            top_right = max_x, min_y
+            bottom_left = min_x, max_y
+            bottom_right = max_x, max_y
 
-        action = None
-        for tile in [
-            currentGrid.get_grid_tile(top_left[0], top_left[1]),
-            currentGrid.get_grid_tile(top_right[0], top_right[1]),
-            currentGrid.get_grid_tile(bottom_left[0], bottom_left[1]),
-            currentGrid.get_grid_tile(bottom_right[0], bottom_right[1])]:
-            tile_action = tile.action()
+            action = None
+            for tile in [
+                currentGrid.get_grid_tile(top_left[0], top_left[1]),
+                currentGrid.get_grid_tile(top_right[0], top_right[1]),
+                currentGrid.get_grid_tile(bottom_left[0], bottom_left[1]),
+                currentGrid.get_grid_tile(bottom_right[0], bottom_right[1])]:
 
+                if tile:
+                    tile_action = tile.action()
+                else:
+                    tile_action = None
 
-            if tile_action.type == "Collide":
-                action = tile_action
-                break
-            elif tile_action.type == "Door":
-                action = tile_action
-                break
-            elif tile_action.type == "Air":
-                action = tile_action
-            else:
-                logging.error(tile_action)
-
-        match action:
-            case ("Door", _):
-                x = self.context.gridID_x
-                y = self.context.gridID_y
-                logging.info("door")
-                match action:
-                    case ("Door", "up"):
-                        logging.error("door up")
-                        y -= 1
-                    case("Door", "down"):
-                        logging.error("door down")
-                        y +=1
-                    case ("Door", "left"):
-                        logging.error("door left")
-                        x -= 1
-                    case ("Door", "right"):
-                        logging.error("door right")
-                        x += 1
-                    case _:
-                        logging.error("door has no direction, {}", action)
-                # Do bounds checck
-                if y >= self.context.gridOfGrids.y_size:
-                    if self.context.door_wrap:
-                        y = 0
+                if tile_action:
+                    if tile_action.type == "Collide":
+                        action = tile_action
+                        break
+                    elif tile_action.type == "Door":
+                        action = tile_action
+                        break
+                    elif tile_action.type == "Air":
+                        action = tile_action
                     else:
-                        logging.error("Door goes off edge of map")
-                if y < 0:
-                    if self.context.door_wrap:
-                        y = self.context.gridOfGrids.y_size -1
+                        logging.error(tile_action)
+                else:
+                    action = ("Air", "Edge detect")
+
+            match action:
+                case ("Door", _):
+                    x = self.context.gridID_x
+                    y = self.context.gridID_y
+                    logging.info("door")
+                    match action:
+                        case _:
+                            logging.error("door has no action, {}", action)
+                case("Air", _):
+                    logging.info("air")
+                    # do edge detection
+                    grid_x = self.context.gridID_x
+                    grid_y = self.context.gridID_y
+                    grid_move = False
+                    if max_y >= self.context.max_y:
+                        grid_y += 1
+                        grid_move = True
+                        y = 15
+                    if min_y < 0:
+                        grid_y -= 1
+                        grid_move = True
+                        y = self.context.max_y - 15
+
+                    if max_x >= self.context.max_x:
+                        grid_x += 1
+                        grid_move = True
+                        x = 15
+                    if min_x < 0:
+                        grid_x -= 1
+                        grid_move = True
+                        x = self.context.max_x - 15
+
+                    if grid_y >= self.context.gridOfGrids.y_size:
+                        if self.context.door_wrap:
+                            grid_y = 0
+                        else:
+                            logging.error("Door goes off edge of map")
+                    if grid_y < 0:
+                        if self.context.door_wrap:
+                            grid_y = self.context.gridOfGrids.y_size -1
+                        else:
+                            logging.error("Door goes off edge of map")
+
+                    if grid_x >= self.context.gridOfGrids.x_size:
+                        if self.context.door_wrap:
+                            grid_x = 0
+                        else:
+                            logging.error("Door goes off edge of map")
+                    if grid_x < 0:
+                        if self.context.door_wrap:
+                            grid_x = self.context.gridOfGrids.x_size -1
+                        else:
+                            logging.error("Door goes off edge of map")
+
+                    if grid_move:
+                        logging.info("Moved to grid {},{}", grid_x, grid_y)
+                        self.context.gridID_y = grid_y
+                        self.context.gridID_x = grid_x
+                        self.context.currentGridElement = self.context.gridOfGrids.get_grid(grid_x,grid_y)
+                        self.context.player.move_player(x,y)
                     else:
-                        logging.error("Door goes off edge of map")
+                        self.context.player.move_player(x, y)
+                case _ :
+                    pass
 
-                if x >= self.context.gridOfGrids.x_size:
-                    if self.context.door_wrap:
-                        x = 0
-                    else:
-                        logging.error("Door goes off edge of map")
-                if x < 0:
-                    if self.context.door_wrap:
-                        x = self.context.gridOfGrids.x_size -1
-                    else:
-                        logging.error("Door goes off edge of map")
-
-                logging.info("Moved to grid {},{}", x, y)
-                self.context.gridID_y = y
-                self.context.gridID_x = x
-                self.context.currentGridElement = self.context.gridOfGrids.get_grid(x,y)
-                self.context.player.move_player(self.context.max_x/2, self.context.max_y/2)
-
-
-            case ("Air", _):
-                logging.info("air")
-                self.context.player.move_player(x, y)
-            case _ :
-                pass
+        except Exception as e:
+            logging.exception("Error updating state")
+            from src.game.helpers import pretty_print
+            pretty_print(self.context)
 
 

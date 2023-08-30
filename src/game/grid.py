@@ -35,18 +35,6 @@ class Door(GridBlock):
 
 WallBlock=SolidBlock()
 
-DownDoorBlock=Door()
-DownDoorBlock.door_action = "down"
-
-UpDoorBlock=Door()
-UpDoorBlock.door_action = "up"
-
-RightDoorBlock=Door()
-RightDoorBlock.door_action = "right"
-
-LeftDoorBlock=Door()
-LeftDoorBlock.door_action = "left"
-
 class GridScreen():
     def __init__(self, grid_size,screen_size):
         self.grid_size = grid_size
@@ -60,9 +48,14 @@ class GridScreen():
                     i*self.tile_size, j*self.tile_size, (i+1)*self.tile_size, (j+1)*self.tile_size))
 
     def get_grid_tile(self,x,y):
-        tile_x = floor(x/self.tile_size)
-        tile_y = floor(y/self.tile_size)
-        return self.grid[int(tile_x)][int(tile_y)]
+        # TODO - detect edges here since we are already doing the location check
+        # TODO - remove execption handling as control flow.... this is gross and i am ashamed
+        try:
+            tile_x = floor(x/self.tile_size)
+            tile_y = floor(y/self.tile_size)
+            return self.grid[int(tile_x)][int(tile_y)]
+        except IndexError:
+            return None
 
 
 class DefaultGridScreen(GridScreen):
@@ -78,16 +71,16 @@ class DefaultGridScreen(GridScreen):
                     self.grid[i].append(AirBlock)
 
                 if j == grid_size-1 and i >= 20 and i <= 40:
-                    self.grid[i][j] = DownDoorBlock
+                    self.grid[i][j] = AirBlock
 
                 if j == 0 and i >= 20 and i <= 40:
-                    self.grid[i][j] = UpDoorBlock
+                    self.grid[i][j] = AirBlock
 
                 if i == grid_size - 1 and j >= 20 and j <= 40:
-                    self.grid[i][j] = RightDoorBlock
+                    self.grid[i][j] = AirBlock
 
                 if i == 0 and j >= 20 and j <= 40:
-                    self.grid[i][j] = LeftDoorBlock
+                    self.grid[i][j] = AirBlock
 
 class GridOfGrids():
     def __init__(self, screen_size):
