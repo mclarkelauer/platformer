@@ -1,37 +1,49 @@
 from math import floor
 from collections import namedtuple
 import pygame
+from enum import Enum
 
 from src.game.color import Color
 
+class BlockType(Enum):
+    AIR = 1
+    DOOR = 2
+    SOLID = 3
+
+GridID = namedtuple("GridID", "x y")
+Coordinate = namedtuple("Coordinate", "x y")
 Action = namedtuple("Action", "type action")
 
 class GridBlock():
     def __init__(self, color):
         self.color = color
+        self.block_type = BlockType.AIR
 
     def action(self):
         return Action("Air", None)
+
+    def get_block_type(self):
+        return self.block_type
 
 AirBlock = GridBlock(Color(0,0,0))
 
 class SolidBlock(GridBlock):
     def __init__(self):
-       super().__init__(Color(255,0,0))
+        super().__init__(Color(255,0,0))
+        self.block_type = BlockType.SOLID
 
     def action(self):
         return Action('Collide', None)
 
 class Door(GridBlock):
-    def __init__(self):
+    def __init__(self, target_grid, target_coordinate):
         super().__init__(Color(255,255,255))
-        self.door_action = None
-
-    def set_action(self, action):
-        self.action = action
+        self.target_grid = target_grid
+        self.target_coordinate = target_coordinate
+        self.block_type = BlockType.DOOR
 
     def action(self):
-        return Action("Door", self.door_action)
+        return Action("Door", {"grid":self.target_grid, "coordinates":self.target_coordinate})
 
 WallBlock=SolidBlock()
 
@@ -82,10 +94,13 @@ class DefaultGridScreen(GridScreen):
                 if i == 0 and j >= 20 and j <= 40:
                     self.grid[i][j] = AirBlock
 
+
 class GridOfGrids():
     def __init__(self, screen_size):
         self._griddie = [[DefaultGridScreen(64,screen_size),DefaultGridScreen(64,screen_size)],
                          [DefaultGridScreen(64,screen_size), DefaultGridScreen(64,screen_size)]]
+
+        self._griddie[0][0].grid[45][45]= Door(GridID(1,1), Coordinate(320,320))
         self.x_size = 2
         self.y_size = 2
 

@@ -121,15 +121,18 @@ class Game():
                         logging.error(tile_action)
                 else:
                     action = ("Air", "Edge detect")
-
+            #
             match action:
                 case ("Door", _):
                     x = self.context.gridID_x
                     y = self.context.gridID_y
-                    logging.info("door")
-                    match action:
-                        case _:
-                            logging.error("door has no action, {}", action)
+                    logging.error("door")
+                    self.context.gridID_y = action.action['grid'].x
+                    self.context.gridID_x = action.action['grid'].y
+                    self.context.currentGridElement = self.context.gridOfGrids.get_grid(
+                        self.context.gridID_x,
+                        self.context.gridID_y)
+                    self.context.player.move_player(action.action['coordinates'].x, action.action['coordinates'].y)
                 case("Air", _):
                     logging.info("air")
                     # do edge detection
@@ -188,8 +191,8 @@ class Game():
                     pass
 
         except Exception as e:
-            logging.exception("Error updating state")
-            from src.game.helpers import pretty_print
-            pretty_print(self.context)
+            import traceback
+            print(traceback.format_exc())
+        #   logging.exception("Error updating state")
 
 
