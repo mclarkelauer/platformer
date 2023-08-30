@@ -22,7 +22,7 @@ class InputState():
 
 class Context():
     def __init__(self, max_x=1024, max_y=1024, tile_size=16):
-        self.door_wrap = True
+        self.door_wrap = False
         self.tile_size = 16
         self.max_x = max_x
         self.max_y = max_y
@@ -39,19 +39,20 @@ class Context():
     def format_state(self):
         state = ""
         state += "Tile Size: {}\n".format(self.tile_size)
-        state += "Tile Dimensions X:{}, Y:{}\n".format(self.max_x, self.max_y)
-        state += "Grid Dimensions X:{}, Y:{}\n".format(self.gridOfGrids.x_size, self.gridOfGrids.y_size)
+        state += "Grid Size X:{}, Y:{}\n".format(self.max_x, self.max_y)
+        state += "Current Grid ID X:{}, Y:{}\n".format(self.gridOfGrids.x_size, self.gridOfGrids.y_size)
         state += "Player Coordinates: ({},{})\n".format(self.player.x, self.player.y)
         state += "Player Grid: ({}, {})".format(self.gridID_x, self.gridID_y)
-
-
-
         return state
 
-    def generate_state_image_overlay(self):
-        font = pygame.font.SysFont(None, 15)
+    def generate_state_image_overlay(self, screen):
+        x = 20
+        y = 20
+        fsize = 30
+        font = pygame.font.SysFont(None, fsize, )
         state = self.format_state()
-        img = font.render(state.encode('utf-8'), True, (200, 200, 200))
 
-        return img
+        lines = state.splitlines()
+        for i, l in enumerate(lines):
+            screen.blit(font.render(l, True, (200,200,200)), (x, y + fsize * i))
 

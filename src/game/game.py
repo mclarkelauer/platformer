@@ -42,7 +42,7 @@ class Game():
         self.context.player.draw(self.screen)
 
         if self.context.show_state:
-            self.screen.blit(self.context.generate_state_image_overlay(),(20,20))
+            self.context.generate_state_image_overlay(self.screen)
 
         # Update the display
         pygame.display.flip()

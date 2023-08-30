@@ -84,9 +84,10 @@ class DefaultGridScreen(GridScreen):
 
 class GridOfGrids():
     def __init__(self, screen_size):
-        self._griddie = [[DefaultGridScreen(64,screen_size)]]
-        self.x_size = 1
-        self.y_size = 1
+        self._griddie = [[DefaultGridScreen(64,screen_size),DefaultGridScreen(64,screen_size)],
+                         [DefaultGridScreen(64,screen_size), DefaultGridScreen(64,screen_size)]]
+        self.x_size = 2
+        self.y_size = 2
 
     def get_grid(self, x, y):
         return self._griddie[y][x]
