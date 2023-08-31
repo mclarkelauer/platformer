@@ -26,7 +26,7 @@ class Context():
         self.tile_size = 16
         self.max_x = max_x
         self.max_y = max_y
-        self.player = Player(10, max_x / 2, max_y / 2, Color(0, 255, 0))
+        self.player = Player(10, max_x / 2, max_y / 2, Color(255, 255, 255))
         self.gridID_x = 0
         self.gridID_y = 0
 
@@ -35,6 +35,7 @@ class Context():
         self.gridOfGrids = GridOfGrids(self.max_x)
         self.currentGridElement = self.gridOfGrids.get_grid(self.gridID_x, self.gridID_y)
         self.show_state = True
+        self.clock = None
 
     def format_state(self):
         state = ""
@@ -42,7 +43,8 @@ class Context():
         state += "Grid Size X:{}, Y:{}\n".format(self.max_x, self.max_y)
         state += "Current Grid ID X:{}, Y:{}\n".format(self.gridOfGrids.x_size, self.gridOfGrids.y_size)
         state += "Player Coordinates: ({},{})\n".format(self.player.x, self.player.y)
-        state += "Player Grid: ({}, {})".format(self.gridID_x, self.gridID_y)
+        state += "Player Grid: ({}, {})\n".format(self.gridID_x, self.gridID_y)
+        state += "FPS: {:.2f}\n".format(self.clock.get_fps())
         return state
 
     def generate_state_image_overlay(self, screen):

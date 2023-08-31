@@ -1,13 +1,21 @@
 import pygame
 
 
-class Player():
+class Player(pygame.sprite.Sprite):
     def __init__(self, size, x, y, color):
+        super().__init__()
         self.size = size
         self.x = x
         self.y = y
         self.color = color
         self.step_size = 2
+        self.image = pygame.Surface([20,20])
+        self.image.fill(color)
+        self.rect = self.image.get_rect()
+
+    def update(self):
+        self.rect.x = self.x
+        self.rect.y = self.y
 
     def draw(self,screen):
         pygame.draw.circle(screen, self.color,
@@ -32,6 +40,7 @@ class Player():
     def move_player(self, x , y):
         self.x = x
         self.y = y
+
 
     def get_player_boundaries(self, x = None, y = None):
         if x is None:

@@ -3,17 +3,22 @@ import logging
 
 from src.game.state import Context
 
+# TODO: add other types of blocks to sprite list
+
 
 class Game():
     def __init__(self, max_x, max_y):
         self.context = Context(max_x, max_y)
         self.screen = None
+        self.all_sprites_list = pygame.sprite.Group()
+        self.all_sprites_list.add(self.context.player)
 
     def run_game(self):
         # pygame init
 
         pygame.init()
         self.running = True
+        self.context.clock = pygame.time.Clock()
 
         # Set the size of the display screen
         screen_size = (self.context.max_x, self.context.max_y)
@@ -21,12 +26,12 @@ class Game():
         self.screen = pygame.display.set_mode(screen_size)
         while self.running:
             self._game_tick()
+            self.context.clock.tick(60)
         # pygame exit
         pygame.quit()
 
     def _game_tick(self):
         # runs once for every game tick
-        pygame.time.delay(1)
         self._process_input()
         self._update_state()
         self._draw_screen()
@@ -39,7 +44,9 @@ class Game():
         self.context.currentGridElement.draw_grid(
             self.screen)
         # Draw something on the screena
-        self.context.player.draw(self.screen)
+        self.all_sprites_list.update()
+        self.all_sprites_list.draw(self.screen)
+        #self.context.player.draw(self.screen)
 
         if self.context.show_state:
             self.context.generate_state_image_overlay(self.screen)
